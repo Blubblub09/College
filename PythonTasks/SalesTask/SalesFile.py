@@ -31,6 +31,7 @@ result = f"Number of lines: {len(content)} \nTotal number of characters: {sum(le
 
 print(result)
 
+#Asking if the user wants to save the results to a seperate file
 choice = bool(input("Do you want to save the results to a new file? \n"
                     "1) Yes \n"
                     "0) No \n"))
