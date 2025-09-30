@@ -1,7 +1,7 @@
 letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 charCount = {}
 
-text = input("Enter a section of text: ").lower().strip()
+text = input("Enter a section of text: ").lower()
 
 #Counts all letters in the text and adds them to the dictionary
 #Ignores punctuation and whitespace

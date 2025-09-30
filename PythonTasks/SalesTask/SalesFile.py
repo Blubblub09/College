@@ -30,3 +30,5 @@ for item in content:
 
 print("Smallest sale line:", smallest ,"\n"
       "Largest sale line:", largest)
+
+print(content)
