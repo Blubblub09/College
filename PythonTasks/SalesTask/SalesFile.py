@@ -5,10 +5,7 @@ name = input("Enter File Name: ")
 with open(name, "r") as file:
     content = file.readlines()
 
-#Determines the length of the file and the amount of lines
-print("Number of lines:", len(content) ,"\n"
-      #Adds the length of every item in the list
-      "Total number of characters:", sum(len(line) for line in content))
+
 
 high = -1
 low = -1
@@ -28,5 +25,15 @@ for item in content:
         smallest = item
         low = num
 
-print("Smallest sale line:", smallest ,"\n"
-      "Largest sale line:", largest)
+
+# Defining the results
+result = f"Number of lines: {len(content)} \nTotal number of characters: {sum(len(line) for line in content)} \nSmallest sale line: {smallest} \nLargest sale line: {largest}"
+
+print(result)
+
+choice = bool(input("Do you want to save the results to a new file? \n"
+                    "1) Yes \n"
+                    "0) No \n"))
+if choice == 1:
+    with open("results.txt", "w") as results:
+        results.write(result)
