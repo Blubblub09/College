@@ -2,9 +2,9 @@ import math
 
 #Defines the function
 def is_square(n):
-    #determines if n is a square number by comparing its root to itself rounded down
-    #if both numbers are equal then n is a square number
-    if math.sqrt(n) == math.floor(math.sqrt(n)):
+    #determines if n is a square number by comparing the root to itself with any decimals cut off
+    #if both numbers are equal then n is a perfect square
+    if math.sqrt(n) == int(math.sqrt(n)):
         return True
     else:
         return False
