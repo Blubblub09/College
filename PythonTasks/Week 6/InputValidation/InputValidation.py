@@ -67,9 +67,9 @@ print(len(unique_items))
 # apple
 # avalanche
 letter = input(f"Enter a starting letter: ")
-for item in all_lines:
-    if item[0] == letter:
-        print(item)
+
+items = [item for item in all_lines if item[0] == letter]
+print(items)
 
 # Scrabble / Word finder v2:
 # Extend your Scrabble / Word finder to print all words beginning with a specific letter, which are a specific number of letters long, which the user inputs.
@@ -77,6 +77,20 @@ for item in all_lines:
 # echoes
 letter = input(f"Enter a starting letter: ")
 length = int(input(f"Enter the length of the words: "))
-for item in all_lines:
-    if item[0] == letter and len(item) == length:
-        print(item)
+
+items = [item for item in all_lines if item[0] == letter and len(item) == length]
+print(items)
+
+# Finding possible words with partial letters given
+possible = all_lines
+given_letters = input("Input letters of a word, insert '?' in place of unknown letters (e.g. 'a??in?' = 'acting') \n").lower()
+
+for position in range(len(given_letters)):
+    if given_letters[position] != "?":
+        possible = [word for word in possible if word[position] == given_letters[position] and len(word) == len(given_letters)]
+
+print(f"Possible words:\n {possible}")
+
+from fnmatch import filter
+possible = filter(all_lines, given_letters)
+print(f"Possible words:\n {possible}")
