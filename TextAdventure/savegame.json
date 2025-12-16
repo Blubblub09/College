@@ -1,0 +1,35 @@
+[
+    {
+        "lobby": {
+            "id": "lobby",
+            "name": "The Hotel Lobby",
+            "description": "A large hotel lobby, brightly lit with blank, white walls",
+            "items": [],
+            "exits": {
+                "north": "hallway"
+            }
+        },
+        "hallway": {
+            "id": "hallway",
+            "name": "The Ground Floor Hallway",
+            "description": "A long hallway, painted the same white as the lobby",
+            "items": [],
+            "exits": {
+                "south": "lobby"
+            }
+        }
+    },
+    [
+        {
+            "name": "Key",
+            "description": "A small, brass key for your room",
+            "can_be_picked_up": true
+        },
+        {
+            "name": "Newspaper",
+            "description": "An old newspaper, it tells of a man who caught a large fish",
+            "can_be_picked_up": true
+        }
+    ],
+    "hallway"
+]
