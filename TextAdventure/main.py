@@ -2,6 +2,12 @@ import json
 
 #Items
 
+item_template = {
+    "name": "Template",
+    "description": "Item",
+    "can_be_picked_up": False
+}
+
 item_key = {
     "name": "Key",
     "description": "A small, brass key for your room",
@@ -10,14 +16,56 @@ item_key = {
 
 item_newspaper = {
     "name": "Newspaper",
-    "description": "An old newspaper, it tells of a man who caught a large fish",
+    "description": "An old newspaper, it tells of a previous guest going missing in the basement",
     "can_be_picked_up": True
 }
+
+item_bed = {
+    "name": "Bed",
+    "description": "Your bed, it looks plain but usable",
+    "can_be_picked_up": False
+}
+
+item_wardrobe = {
+    "name": "Wardrobe",
+    "description": "Your wardrobe, it contains your spare clothes",
+    "can_be_picked_up": False
+}
+
+item_guestKey = {
+    "name": "GuestKey",
+    "description": "A key, it is labeled with the number of the room opposite yours",
+    "can_be_picked_up": True
+}
+
+item_torch = {
+    "name": "Torch",
+    "description": "A small, battery powered torch",
+    "can_be_picked_up": True
+}
+
+item_body = {
+    "name": "Body",
+    "description": "The body of the previous guest of the hotel. \nOoo spooky anyway that's the end of the game bye",
+    "can_be_picked_up": False
+}
+
+
 
 PLAYER_INVENTORY = []
 
 
 #Areas
+
+room_template = {
+    "id": "template",
+    "name": "Template Room",
+    "description": "Blank Room",
+    "items": [
+    ],
+    "exits": {
+    }
+}
 
 room_lobby = {
     "id": "lobby",
@@ -25,27 +73,93 @@ room_lobby = {
     "description": "A large hotel lobby, brightly lit with blank, white walls",
     "items": [
         item_key
-        ],
+    ],
     "exits": {
-        "north": "hallway"
+        "north": "hallway",
+        "east": "stairs"
     }
 }
 
 room_hallway = {
     "id": "hallway",
-    "name": "The Ground Floor Hallway",
-    "description": "A long hallway, painted the same white as the lobby",
+    "name": "The Hallway",
+    "description": "A long hallway, painted the same white as the lobby but lined with doors with various room numbers",
     "items": [
-        item_newspaper]
-        ,
+        item_newspaper
+    ],
     "exits": {
-        "south": "lobby"
+        "south": "lobby",
+        "east": "room",
+        "west": "guest"
+    }
+}
+
+room_room = {
+    "id": "room",
+    "name": "Your Room",
+    "description": "A plain bedroom holding a simple bed and small wardrobe for your things",
+    "items": [
+        item_wardrobe,
+        item_bed
+    ],
+    "requiredItems": [
+        item_key
+    ],
+    "exits": {
+        "west": "hallway"
+    }
+}
+
+room_guest = {
+    "id": "guest",
+    "name": "Guest Room",
+    "description": "A bedroom, it appears to have been torn apart by it's previous occupant",
+    "items": [
+        item_torch
+    ],
+    "requiredItems": [
+        item_guestKey
+    ],
+    "exits": {
+        "east": "hallway"
+    }
+}
+
+room_stairs = {
+    "id": "stairs",
+    "name": "Stairs",
+    "description": "A blank white staircase, it loops around to connect the lobby to the basement",
+    "items": [
+        item_guestKey
+    ],
+    "exits": {
+        "west": "lobby",
+        "north": "basement"
+    }
+}
+
+room_basement = {
+    "id": "basement",
+    "name": "The Hotel Basement",
+    "description": "A Dark place",
+    "items": [
+        item_body
+    ],
+    "requiredItems": [
+        item_torch
+    ],
+    "exits": {
+        "south": "stairs"
     }
 }
 
 WORLD = {
     "lobby": room_lobby,
-    "hallway": room_hallway
+    "hallway": room_hallway,
+    "stairs": room_stairs,
+    "basement": room_basement,
+    "guest": room_guest,
+    "room": room_room
 }
 
 CURRENT_ROOM_ID = "lobby"
@@ -61,20 +175,32 @@ def display_room_info(room_id):
           f"{current_room['description']}")
     
     #Prints the name of every item found in the current room, if there are any
-    if len(WORLD[CURRENT_ROOM_ID]["items"]) >= 1:
-        print("You see around you:")
-        [print(WORLD[CURRENT_ROOM_ID]["items"][position]["name"]) for position in range(len(WORLD[CURRENT_ROOM_ID]["items"]))]    
+    if len(WORLD[room_id]["items"]) >= 1:
+        print("You see around:")
+        [print(WORLD[room_id]["items"][position]["name"]) for position in range(len(WORLD[room_id]["items"]))]    
 
 def try_move(direction):
     global CURRENT_ROOM_ID
+    allowed = 0
 
     #Retrieves current room's exits
     current_exits = WORLD[CURRENT_ROOM_ID]["exits"]
-
+    
     if direction in current_exits:
-        #Update to new location
-        CURRENT_ROOM_ID = current_exits[direction]
-        display_room_info(CURRENT_ROOM_ID)
+        try:
+            #Checks if amount of items shared by the required items and the player inventory, can work with multiple requirements
+            #Uses Try+Except to account for errors created by rooms with no requirements
+            if len(["" for item in WORLD[current_exits[direction]]["requiredItems"] if item["name"] in [player_item["name"] for player_item in PLAYER_INVENTORY]]) == len(WORLD[current_exits[direction]]["requiredItems"]):
+                allowed = 1
+        except:
+            allowed = 1
+
+        if allowed == 1:   
+            #Update to new location
+            CURRENT_ROOM_ID = current_exits[direction]
+            display_room_info(CURRENT_ROOM_ID)
+        else:
+            print("You do not have what you need to go that way!")
     else:
         print("You cannot go that way!")
 
@@ -102,11 +228,18 @@ def handle_action(verb, noun):
             display_room_info(CURRENT_ROOM_ID)
         elif noun in ("north", "east", "south", "west"):
             if noun in WORLD[CURRENT_ROOM_ID]["exits"]:
-                display_room_info(WORLD[CURRENT_ROOM_ID]["exits"][noun])
+                print(WORLD[WORLD[CURRENT_ROOM_ID]["exits"][noun]]["description"])
             else:
                 print("There is nothing to see that way!")
-        elif noun in [PLAYER_INVENTORY[position]["name"].lower() for position in range(len(PLAYER_INVENTORY))]:
-            print(PLAYER_INVENTORY[noun]["description"])
+
+    elif verb == "examine":
+        if not noun:
+            print("Examine what?")
+        else:
+            #prints item description if it matches the noun and can be found within the player inventory
+            [print(PLAYER_INVENTORY[position]["description"]) for position in range(len(PLAYER_INVENTORY)) if noun in PLAYER_INVENTORY[position]["name"].lower()]
+            #or within the current room
+            [print(WORLD[CURRENT_ROOM_ID]["items"][position]["description"]) for position in range(len(WORLD[CURRENT_ROOM_ID]["items"])) if noun in WORLD[CURRENT_ROOM_ID]["items"][position]["name"].lower()]
 
     elif verb == "inventory":
         print("\n--- Your Backpack ---")
@@ -139,12 +272,16 @@ def handle_action(verb, noun):
             if item["name"].lower() == noun:
                 item_to_take = item
                 break
+        
         if item_to_take:
-            #Removes from room list
-            room_items.remove(item_to_take)
-            #Add to player list
-            PLAYER_INVENTORY.append(item_to_take)
-            print(f"You take the {item_to_take["name"]}")
+            if item_to_take["can_be_picked_up"]:
+                #Removes from room list
+                room_items.remove(item_to_take)
+                #Add to player list
+                PLAYER_INVENTORY.append(item_to_take)
+                print(f"You take the {item_to_take["name"]}")
+            else:
+                print("You cannot pick that up!")
         else:
             print(f"There is no {noun} here")
     
@@ -164,7 +301,7 @@ def handle_action(verb, noun):
             #Remove from player list
             PLAYER_INVENTORY.remove(item_to_drop)
             #Add to Room List
-            WORLD[CURRENT_ROOM_ID]["items"].append[item_to_drop]
+            WORLD[CURRENT_ROOM_ID]["items"].append(item_to_drop)
             print(f"You drop the {item_to_drop["name"]}")
         else:
             print(f"You aren't carrying a {noun}.")
