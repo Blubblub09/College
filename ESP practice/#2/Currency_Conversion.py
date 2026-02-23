@@ -1,5 +1,7 @@
 import pandas as pd
-import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+CONVERSION_COUNT = 8
 
 #allows a number to be inputted for a menu within specified
 def menuInput(first, last):
@@ -56,14 +58,28 @@ def menu():
         elif choice == 2:
             currencies = ["EUR", "AUD", "JPY", "USD"]
             print("\n\n\n######################################################")
-            for currency in range(len(currencies)):
+            for currency in range(0, CONVERSION_COUNT, 2):
                 #prints the amount of 
-                print(f"1 GBP is worth {get_conversion_rate(get_currency(currency+1))} {currencies[currency]}")
+
+                print(f"1 GBP is worth {get_conversion_rate(get_currency(currency+1))} {currencies[currency//2]}")
             print("######################################################")
         
         elif choice == 3:
             print("\n\n\n######################################################")
+            df = pd.read_csv("ESP practice/#2/data.csv")
+
+            plt.grid()
+            plt.title("Date vs Currency conversion value")
+            plt.xlabel('Date')
+            plt.ylabel('Exchange Rate')
             
+
+            # plots a line for every conversion rate
+            for conversion in [get_currency(position) for position in range(1, CONVERSION_COUNT+1)]:
+                plt.plot(df[conversion] , label = conversion, marker = "", linestyle = "solid", linewidth = 3)
+            plt.legend()
+            plt.savefig('ESP practice/#2/exchange_rates.png', dpi = 400)
+
             print("######################################################")
         
         elif choice == 4:
@@ -131,4 +147,5 @@ def perform_conversion(conversion_amount, conversion_rate, currency):
     print('You are converting {} in {}'.format(conversion_amount, currency[0:3]) )
     print('You will receive {} in {}'.format(amount_recieved, currency[6:9]))
 
-menu()
+if __name__ == "__main__": 
+    menu()
